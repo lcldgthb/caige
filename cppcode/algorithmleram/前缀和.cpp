@@ -5,11 +5,37 @@
 //记得用long long
 //给的数是从1开始，所以，前缀和不用特殊处理
 #include <iostream>
+#include <vector>
 using namespace std;
 const int N=1e5+10;
 long long arr[N];//arr[i]表示前i个数的和，包括第i个数。
 int main() {
-   int n,m;
+    
+  vector<int> nums={1,1,1};
+   int k=2;
+          int n=nums.size();
+        int count=0;
+        vector<int>f(n+1);
+        for(int i=1;i<=n;i++)
+        {
+            f[i]=f[i-1]+nums[i];
+        }
+        for(auto it:f)        cout<<it<<" ";
+        cout<<endl;
+        for(int i=1;i<=n;i++)
+        {
+            for(int j=0;j<i;j++)
+            {
+                if((f[i]-f[j])==k)
+                count++;
+            }
+        }
+        cout<<count<<endl;
+}
+// 64 位输出请用 printf("%lld")
+/*
+
+ int n,m;
    cin>>n>>m;
     for(int i=1;i<=n;i++)
     {
@@ -23,9 +49,6 @@ int main() {
         cin>>l>>r;
         cout<<arr[r]-arr[l-1]<<endl;
     }
-}
-// 64 位输出请用 printf("%lld")
-/*
 
  class Solution {
 public:
