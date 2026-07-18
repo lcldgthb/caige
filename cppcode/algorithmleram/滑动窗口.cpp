@@ -1,4 +1,12 @@
+#include<iostream>
+using namespace std;
+int main()
+{
+
+    return 0;
+}
 /*
+//滑动窗口
 1
 class Solution {
 public:
@@ -24,6 +32,7 @@ public:
         return ret==0x3f3f3f3f?0:ret;
     }
 };
+
 2
 class Solution {
 public:
@@ -52,6 +61,7 @@ public:
       return len;
     }
 };
+
 3
 class Solution {
 public:
@@ -93,6 +103,7 @@ public:
         return retlen;
     }
 };
+
 4
 class Solution {
 public:
@@ -162,6 +173,44 @@ public:
     }
 };
 6
+class Solution {
+public:
+    vector<int> findAnagrams(string s, string p) {
+        int arr[26]={0};
+        for(auto it:p)arr[it-'a']++;
+        int left=0,right=0;
+        vector<int>ret;
+        int tmp[26]={0};
+        for(;right<s.size();right++)
+        {
+            tmp[s[right]-'a']++;
+            if(arr[s[right]-'a']==0)
+            {
+                left=right+1;
+                right=right;
+               // for(auto it:tmp)it=0;
+               for(int k=0;k<26;k++)tmp[k]=0;
+                continue;
+            }
+            while(tmp[s[right]-'a']>arr[s[right]-'a'])
+            {
+                tmp[s[left++]-'a']--;
+            }
+            int j=0;
+            for(;j<26;j++)
+            {
+                if(arr[j]!=tmp[j])
+                break;
+            }
+            if(j==26)
+            {
+                ret.push_back(left);
+            }
+        }
+        return ret;
+    }
+};
+6.2
 class Solution {
 public:
     vector<int> findAnagrams(string s, string p) {
@@ -247,6 +296,7 @@ public:
         return ret;
     }
 };
+8
 
 
 */
