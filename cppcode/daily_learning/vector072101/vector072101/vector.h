@@ -65,7 +65,14 @@ namespace caige
             _end_of_storage = _finish;
         }
         template<class InputIterator>
-        vector(InputIterator first, InputIterator last);
+        vector(InputIterator first, InputIterator last)
+        {
+            while (first != last)
+            {
+                push_back(*first);
+                first++;
+            }
+        }
 
         vector(const vector<T>& v)//注意这里是const，不能用swap
         {
@@ -239,7 +246,24 @@ namespace caige
     };
 
     template<class T>
-    void print_vector(const vector<T>& v);
+    void print_vector(const vector<T>& v)
+    {
+        for (auto it : v)
+        {
+            cout << *it << " ";
+        }
+        cout << endl;
+    }
+    template<class T>
+    void print_content(const T& t)
+    {
+        for (auto it : t)
+        {
+            cout << *it << ' ';
+        }
+        cout << endl;
+    }
+
 
     void test_vector1();
     void test_vector2();
