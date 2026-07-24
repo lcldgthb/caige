@@ -287,6 +287,7 @@ void test_list10()
 //--------------------------------------------------
 void test_list()
 {
+    cout << "²âÊÔ¿ªÊ¼£º" << endl;
     test_list1();
     test_list2();
     test_list3();
@@ -297,4 +298,9 @@ void test_list()
     test_list8();
     test_list9();
     test_list10();
+}
+int main()
+{
+   test_list();
+    return 0;
 }

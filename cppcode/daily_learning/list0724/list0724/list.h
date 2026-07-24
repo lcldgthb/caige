@@ -204,7 +204,7 @@ namespace caige
 		{
 			assert(!empty());
 			erase(--end());//删除后迭代器里面的node还是指向_head,所以，不用管
-			_size--;
+			//_size--;重复维护size!!!!
 		}
 
 		void pop_front()
