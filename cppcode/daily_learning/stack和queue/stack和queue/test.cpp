@@ -7,27 +7,61 @@ using namespace std;
 
 namespace caige
 {
-	template<class T>
-	class Lesser
+	
+	void test01()
 	{
-	public :
-		bool operator()(int x, int y)
+		priority_queue<int> pq1;
+		pq1.push(1);
+		pq1.push(4);
+		pq1.push(2);
+		pq1.push(3);
+		while (!pq1.empty())
 		{
-			return x < y;
+			cout << pq1.top() << " ";
+			pq1.pop();
 		}
-	};
-	template<class T>
-	class Greater
+		cout << endl;
+		
+	}
+	void teststack()
 	{
-	public:
-		bool operator()(int x, int y)
+		stack<int> st;
+		st.push(1);
+		st.push(2);
+		st.push(3);
+		st.push(4);
+		cout << st.top();
+		st.pop();
+		cout << st.top();
+		while (!st.empty())
 		{
-			return x >y;
+			cout << st.top() << " ";
+			st.pop();
 		}
-	};
+		cout << endl;
+
+	}
+	void testqueue()
+	{
+		queue<int> q;
+		q.push(1);
+		q.push(2);
+		q.push(3);
+		q.push(4);
+		q.push(5);
+		cout << q.front() << " " << q.back();
+		q.pop();
+		while (!q.empty())
+		{
+			cout << q.front() << " ";
+			q.pop();
+		}
+	}
 }
 int main()
 {
-
+	//caige::test01();
+	//caige::teststack();
+	caige::testqueue();
 	return 0;
 }
