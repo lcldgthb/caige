@@ -100,6 +100,8 @@ namespace caige
 		{
 			return _con.empty();
 		}
+		////////////////////////////////////////////////
+		// 
 		//自己的实现过程：
 		//默认是大堆
 		void AdjustUp(int child)
