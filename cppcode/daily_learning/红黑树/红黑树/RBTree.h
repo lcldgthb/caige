@@ -94,21 +94,21 @@ public:
 		//2.1单旋+变色
 		//2.2双旋+变色
 	
-		while (parent&&parent->_col==RED)
+		while (parent&&parent->_col==RED)//父亲为红
 		{
 			Node* grandfather = parent->_parent;
 			Node* uncle = nullptr;
-			if (parent == grandfather->_left)
+			if (parent == grandfather->_left)//父亲是爷爷的左孩子
 			{
-				uncle = grandfather->_right;
-					if (uncle && uncle->_col == RED)
+				uncle = grandfather->_right;//得到叔叔
+					if (uncle && uncle->_col == RED)//叔叔存在且为红
 					{
 						//仅变色
 						grandfather->_col = RED;
 						uncle->_col = BLACK;
 						parent->_col = BLACK;
 					}
-					else if (parent->_left == cur)//uncle存在与否已经不重要了
+					else if (parent->_left == cur) // 叔叔不存在或为黑，然后有分，我和父亲的关系和父亲和爷爷的关系是一样的，都是左孩子
 					{
 						//右单旋
 						RotateR(grandfather);
@@ -117,7 +117,7 @@ public:
 						grandfather->_col = RED;
 						break;
 					}
-					else if (parent->_right == cur)
+					else if (parent->_right == cur)//我c是父亲p的右孩子，双旋
 					{
 						//左右双旋
 						RotateL(parent);
