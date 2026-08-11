@@ -263,9 +263,45 @@ namespace hash_bucket
 			return true;
 		}
 
-	private:
-		vector<Node*> _tables; // 指针数组
-		size_t _n = 0;		   // 表中存储数据个数
-	};
+	
+bool Insert(const pair<K, V>& kv)
+{
+	if (Find(kv.first))
+		return false;
+
+	// 负载因子 >= 0.7扩容
+	if (_n * 10 / _tables.size() >= 7)
+	{
+		//vector<HashData<K, V>> newtables(_tables.size()*2);
+		//for (auto& data : _tables)
+		//{
+		//	// 旧表的数据映射到新表
+		//	if (data._state == EXIST)
+		//	{
+		//		size_t hash0 = data._kv.first % newtables.size();
+		//		// ...
+		//	}
+		//}
+
+		//_tables.swap(newtables);
+
+		HashTable<K, V, Hash> newht;
+		//newht._tables.resize(_tables.size() * 2);
+		newht._tables.resize(__stl_next_prime(_tables.size() + 1));
+
+		for (auto& data : _tables)
+		{
+			// 旧表的数据映射到新表
+			if (data._state == EXIST)
+			{
+				newht.Insert(data._kv);
+			}
+		}
+
+		_tables.swap(newht._tables);
+	}
+private:
+	vector<Node*> _tables; // 指针数组
+	size_t _n = 0;		   // 表中存储数据个数
+};
 }
-Gitee - 基于 Git 的代码托管和研发协作平台
