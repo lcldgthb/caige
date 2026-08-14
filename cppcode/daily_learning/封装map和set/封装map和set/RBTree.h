@@ -280,7 +280,10 @@ public:
 		return Const_Iterator(nullptr, _root);
 	}
 
-	// ≤Â»Î
+
+
+	////////////////////////////
+	// 	// ≤Â»Î
 	pair<Iterator,bool> Insert(const T& data)
 	{
 		if (_root == nullptr)
