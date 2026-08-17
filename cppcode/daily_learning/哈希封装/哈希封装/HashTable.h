@@ -1,101 +1,182 @@
 #pragma once
+#pragma once
+
+#include <iostream>
 #include <vector>
 #include <string>
+#include <algorithm>
+#include <utility>
+
 using namespace std;
 
-// ==================== 哈希函数仿函数（已提供，无需补全） ====================
-// 作用：把 key 转成可以取模的 size_t 整数
+enum State
+{
+	EXIST,
+	EMPTY,
+	DELETE
+};
+
+template<class K, class V>
+struct HashData
+{
+	pair<K, V> _kv;
+	State _state = EMPTY;
+};
+
 template<class K>
 struct HashFunc
 {
-    size_t operator()(const K& key)
-    {
-        return (size_t)key;
-    }
+	size_t operator()(const K& key)
+	{
+		return (size_t)key;
+	}
 };
 
-// string 特化：BKDR 哈希
-// 思考：为什么不能把每个字符直接相加？
-// 因为 "abcd" 和 "bcad" 相加结果相同，会冲突。
-// 每次乘以质数 131，让不同排列的字符产生不同哈希值。
 template<>
 struct HashFunc<string>
 {
-    size_t operator()(const string& key)
-    {
-        size_t hash = 0;
-        for (auto ch : key)
-        {
-            hash = hash * 131 + ch;
-        }
-        return hash;
-    }
+	size_t operator()(const string& s);
 };
 
-// ==================== 哈希桶（链地址法） ====================
+inline unsigned long __stl_next_prime(unsigned long n)
+{
+	static const int __stl_num_primes = 28;
+
+	static const unsigned long __stl_prime_list[__stl_num_primes] = {
+		53, 97, 193, 389, 769,
+		1543, 3079, 6151, 12289, 24593,
+		49157, 98317, 196613, 393241, 786433,
+		1572869, 3145739, 6291469, 12582917,
+		25165843, 50331653, 100663319, 201326611,
+		402653189, 805306457, 1610612741,
+		3221225473, 4294967291
+	};
+
+	const unsigned long* first = __stl_prime_list;
+	const unsigned long* last = __stl_prime_list + __stl_num_primes;
+	const unsigned long* pos = lower_bound(first, last, n);
+
+	return pos == last ? *(last - 1) : *pos;
+}
+
+
+namespace open_address
+{
+	template<class K, class V, class Hash = HashFunc<K>>
+	class HashTable
+	{
+	public:
+		HashTable();
+
+		bool Insert(const pair<K, V>& kv);
+
+		HashData<K, V>* Find(const K& key);
+
+		bool Erase(const K& key);
+
+	private:
+		vector<HashData<K, V>> _tables;
+		size_t _n;
+	};
+}
+
+
 namespace hash_bucket
 {
-    // 桶节点（已提供，无需补全）
-    template<class K, class V>
-    struct HashNode
-    {
-        pair<K, V> _kv;
-        HashNode<K, V>* _next;
+	template<class T>
+	struct HashNode
+	{
+		T _data;
+		HashNode<T>* _next;
 
-        HashNode(const pair<K, V>& kv)
-            : _kv(kv)
-            , _next(nullptr)
-        {}
-    };
+		HashNode(const T& data)
+			:_data(data)
+			,_next(nullptr)
+		{ }
+	};
 
-    template<class K, class V, class Hash = HashFunc<K>>
-    class HashTable
-    {
-        typedef HashNode<K, V> Node;
-    public:
-        HashTable()
-        {
-            // TODO: 给 _tables 开好初始桶（建议 11 个），每个桶初始化为 nullptr
-        }
 
-        ~HashTable()
-        {
-            // TODO: 遍历每个桶，逐个 delete 释放节点
-            // 注意：先保存 cur->_next，再 delete cur，否则删完找不到下一个
-        }
+	// 前置声明
+	template<class K, class T, class KeyOfT, class Hash>
+	class HashTable;
 
-        bool Insert(const pair<K, V>& kv)
-        {
-            // 1. 判重：key 已存在则 return false（可复用 Find）
 
-            // 2. 扩容：当 _n == _tables.size()（负载因子 == 1）时
-            //    - 开一个新表，桶数 = 旧桶数 * 2，全部初始化为 nullptr
-            //    - 遍历旧表每个桶的每个节点，重新计算下标，头插到新表
-            //    ⚠️ 迁移前必须先保存 cur->_next，否则头插会弄断链表
-            //    - 最后 swap 新旧表
+	template<class K, class T, class Ref, class Ptr, class KeyOfT, class Hash>
+	struct HTIterator
+	{
+		typedef HashNode<T> Node;
+		typedef HashTable<K, T, KeyOfT, Hash> HT;
+		typedef HTIterator<K, T, Ref, Ptr, KeyOfT, Hash> Self;
 
-            // 3. 头插新节点：算 hashi → new 节点 → 头插 → ++_n → return true
-        }
+		Node* _node;
+		const HT* _ht;
 
-        Node* Find(const K& key)
-        {
-            // 1. 算 hashi = hs(key) % _tables.size()
-            // 2. 从 _tables[hashi] 开始遍历链表
-            // 3. cur->_kv.first == key 则返回 cur；遍历完返回 nullptr
-        }
+		HTIterator(Node* node, const HT* ht);
 
-        bool Erase(const K& key)
-        {
-            // 1. 算 hashi
-            // 2. 用 prev、cur 双指针遍历桶链表
-            // 3. 找到后分两种情况删除：
-            //    - 删除的是头节点：_tables[hashi] = cur->_next
-            //    - 删除的是中间/尾节点：prev->_next = cur->_next
-            // 4. delete cur，--_n，return true；没找到 return false
-        }
+		Ref operator*();
 
-    private:
-        vector<Node*> _tables; // 指针数组：每个桶是一个链表的头指针
-        size_t _n = 0;         // 存储的有效数据个数
-    };
+		Ptr operator->();
+
+		bool operator!=(const Self& s);
+
+		Self& operator++();
+	};
+
+
+	template<class K, class T, class KeyOfT, class Hash>
+	class HashTable
+	{
+		template<class K, class T, class Ref, class Ptr, class KeyOfT, class Hash>
+		friend struct HTIterator;
+
+		typedef HashNode<T> Node;
+
+	public:
+		typedef HTIterator<K, T, T&, T*, KeyOfT, Hash> Iterator;
+		typedef HTIterator<K, T, const T&, const T*, KeyOfT, Hash> ConstIterator;
+
+	public:
+		HashTable()
+			:_tables(nullptr)
+			,n(0)
+		{ }
+
+		~HashTable();
+
+		Iterator Begin();
+
+		Iterator End();
+
+		ConstIterator Begin() const;
+
+		ConstIterator End() const;
+
+		pair<Iterator, bool> Insert(const T& data)
+		{
+			Hash gethash;
+			size_t hashi = gethash(KeyOfT(data));
+			Node* pre = nullptr;
+			Node* cur = _table[hashi];
+			Node* newnode = new Node(data);
+			if (cur)
+			{
+				newnode->_next = cur->_next;
+				cur->_next = newnode;
+				return { Iterator(newnode),true };
+			}
+			else
+			{
+				_table[hashi] = newnode;
+				return { Iterator(newnode),true };
+			}
+		}
+
+		Iterator Find(const K& key);
+
+		bool Erase(const K& key);
+
+	private:
+		vector<Node*> _tables;
+		size_t _n = 0;
+	};
 }
