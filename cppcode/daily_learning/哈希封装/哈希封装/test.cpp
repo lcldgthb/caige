@@ -193,7 +193,7 @@ struct DateHashFunc
 		return hash;
 	}
 };
-
+using namespace hash_bucket;
 //int main()
 //{
 //	//int a[] = { 19,30,52,63,11,22 };
@@ -258,10 +258,10 @@ int main()
 	//	ht1.Insert({ e, e });
 	//}
 
-	//test_set2();
+	test_set2();
 
-	//bit::test_set1();
-	//bit::test_map1();
+	//test_set1();
+	/*bit::test_map1();*/
 
 
 	return 0;

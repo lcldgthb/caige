@@ -309,7 +309,7 @@ namespace open_address
 		{
 			HashFunc hashf;
 			size_t hash0 = hashf(key) % _tables.size();
-			while (_tables[hash0]._state != EMPTY && _tables[hash0]._kv.first != key)
+			while (_tables[hash0]._state != EXIST && _tables[hash0]._kv.first != key)
 			{
 				hash0++;
 				hash0 %= _tables.size();
@@ -367,17 +367,65 @@ namespace hash_bucket
 		Node* _node;
 		const HT* _ht;
 
-		HTIterator(Node* node, const HT* ht);
+		HTIterator(Node* node, const HT* ht)
+			:_node(node)
+			,_ht(ht)
+		{ }
 
-		Ref operator*();
+		Ref operator*()
+		{
+			return _node->_data;
+		}
 
-		Ptr operator->();
+		Ptr operator->()
+		{
+			return &_node->_data;
+		}
+		/* 
+		*it 调用it.operator*()
+		而：it->name调用：it.operator->()->name，有两次->
+		因为C++ 会自动帮你调用迭代器的：operator->()
+		所以：it->name本质上可以理解为：
+		it.operator->()->name
+		又因为->的调用对象必须是指针，所以要&取地址
+			*/
+		bool operator!=(const Self& s)
+		{
+			return _node != s._node;
+		}
 
-		bool operator!=(const Self& s);
-
-		Self& operator++();
+		Self& operator++()
+		{
+			Hash hashf;
+			KeyOfT kot;
+			if (_node->_next)
+			{
+				_node= _node->_next;
+				return *this;
+			}
+			else
+			{
+				size_t hash0 = hashf(kot(_node->_data)) % _ht->_tables.size();
+				size_t i = hash0+1;
+				while (i <= _ht->_tables.size())
+				{
+					if (i == _ht->_tables.size())
+					{
+						_node = nullptr;
+						return *this;
+					}
+					if ((_ht->_tables[i]))
+					{
+						break;
+					}
+					i++;
+				}
+				_node = _ht->_tables[i];
+				return *this;
+			}
+		}
 	};
-
+	
 
 	template<class K, class T, class KeyOfT, class Hash>
 	class HashTable
@@ -396,26 +444,91 @@ namespace hash_bucket
 			:_tables(__stl_next_prime(1))
 		{ }
 
-		~HashTable();
+		~HashTable()
+		{
+			for (size_t i = 0; i < _tables.size(); i++)
+			{
+				Node* cur = _tables[i];
+				while (cur)
+				{
+					Node* next = cur->_next;
+					delete cur;
 
-		Iterator Begin();
+					cur = next;
+				}
 
-		Iterator End();
+				_tables[i] = nullptr;
+			}
+		}
 
-		ConstIterator Begin() const;
+		Iterator Begin()
+		{
+			for (auto& it : _tables)
+				if (it)
+					return Iterator(it,this);
+			return End();
+		}
+
+		Iterator End()
+		{
+			return Iterator(nullptr, this);
+		}
+
+		ConstIterator Begin() const
+		{
+			for (auto& it : _tables)
+				if (it)
+					return ConstIterator(it, this);
+			return End();
+		}
 
 		ConstIterator End() const
 		{
-
+			return ConstIterator(nullptr, this);
 		}
 
 		pair<Iterator, bool> Insert(const T& data)
 		{
 			KeyOfT kot;
-			if (Find(kot(data)) != End())
-				return { find(kot(data) ),false };
-		
 			Hash hashf;
+			if (Find(kot(data)) != End())
+				return { Find(kot(data) ),false };
+			if (_n ==_tables.size())//理论上超过1任然可以存储
+			{
+				/*HashTable<K, T, KeyOfT, Hash> nhash;
+				nhash._tables.resize(__stl_next_prime(_tables.size() + 1));
+				for (auto& it : _tables)
+				{
+					if (it)
+					{
+						Node* cur = it;
+						while (cur)
+						{
+							nhash.Insert(it->_data);
+							cur = cur->_next;
+						}
+					}
+				}
+				swap(nhash._tables, _tables);*/
+				//不新创建Node的方法
+				vector<Node*> nhashtable(__stl_next_prime(_tables.size() + 1));
+				for (size_t i = 0; i < _tables.size(); i++)
+				{
+					Node* cur = _tables[i];
+					while (cur)
+					{
+						Node* next = cur->_next;
+						size_t nhash0 = hashf(kot(cur->_data)) % nhashtable.size();
+						//头插
+						cur->_next = nhashtable[nhash0];
+						nhashtable[nhash0] = cur;
+						cur = next;
+					}
+				}
+				_tables.swap(nhashtable);
+			}
+			//.用作不是指针类型的时候，->用作是类型的时候，访问的是该指针指向的对象里面的元素
+	
 			size_t hash0 = hashf(kot(data)) % _tables.size();
 		/*	Node newnode(data);*/
 			Node* newnode = new Node(data);
@@ -440,6 +553,7 @@ namespace hash_bucket
 				newnode->_next = tmp;
 			}
 			_n++;
+			
 			return { Iterator(newnode,this),true };
 		}
 
