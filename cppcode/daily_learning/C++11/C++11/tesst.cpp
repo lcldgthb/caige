@@ -637,20 +637,3 @@ public:
 //
 //	return 0;
 //}
-
-#include<list>
-#include"List.h"
-
-int main()
-{
-	bit::list<bit::string> lt;
-	bit::string s1("11111111111");
-	lt.push_back(s1);
-
-	bit::string s2("33333333333");
-	lt.push_back(move(s2));
-
-	lt.push_back("22222222222");
-
-	return 0;
-}
