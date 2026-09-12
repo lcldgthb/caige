@@ -6,6 +6,7 @@
 using namespace std;
 namespace caige
 {
+	//1，什么类型的指针+1就表示第几个元素，不用乘sizeof（T）
 	template<class T>
 	class SqList
 	{
@@ -55,16 +56,17 @@ namespace caige
 		}
 		size_t posprev(const T& t)//获取对应元素的前一个元素的下标
 		{
-			int posi = pos(t)-1;
-			assert(posi >=0 && posi < _size);
-			return posi;
+			int posi = pos(t);
+			assert(posi != _size);      // 没找到
+			assert(posi >0);   // 没有前驱
+			return posi-1;
 		}
 		size_t posnext(const T& t)//获取对应元素的后一个元素的下标
 		{
-			int posi = pos(t) +1;
+			int posi = pos(t);
 			assert(posi != _size);      // 没找到
 			assert(posi + 1 < _size);   // 没有后继
-			return posi;
+			return posi+1;
 		}
 		void reserve(size_t n)//预留空间
 		{
@@ -126,7 +128,7 @@ namespace caige
 			*dest = t;
 			_size++;
 		}*/
-		void insert(size_t i, const T& t)
+		void insert(size_t i, const T& t)//指定位置插入指定元素
 		{
 			assert(i <= _size);
 			if (_size >= _capacity)
@@ -142,7 +144,7 @@ namespace caige
 			_size++;
 		}
 
-		void deletei(size_t i)
+		void deletei(size_t i)//删除第i个元素
 		{
 			assert(i < _size);
 			for (int cur = i; cur < _size-1; cur++)
@@ -151,7 +153,7 @@ namespace caige
 			}
 			_size--;
 		}
-		void print()
+		void print()//打印数组
 		{
 			assert(_size != 0);
 			for (int i = 0; i < _size; i++)
@@ -160,7 +162,7 @@ namespace caige
 			}
 			cout << endl;
 		}
-		void sort()
+		void sort()//排序数组，默认升序，冒泡排序
 		{
 			assert(!emptry());
 			for (int i = 0; i < _size; i++)
@@ -174,7 +176,7 @@ namespace caige
 		}
 	private:
 		T* _data=nullptr;
-		size_t _size=0;
-		size_t _capacity = 0;
+		size_t _size=0;//有效元素个数
+		size_t _capacity = 0;//容量，申请空间大小
 	};
 }
