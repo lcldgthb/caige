@@ -235,184 +235,184 @@ struct Point
 //
 //	return 0;
 //}
-
-namespace bit
-{
-	class string
-	{
-	public:
-		typedef char* iterator;
-		typedef const char* const_iterator;
-
-		iterator begin()
-		{
-			return _str;
-		}
-
-		iterator end()
-		{
-			return _str + _size;
-		}
-
-		const_iterator begin() const
-		{
-			return _str;
-		}
-
-		const_iterator end() const
-		{
-			return _str + _size;
-		}
-
-		string(const char* str = "")
-			:_size(strlen(str))
-			, _capacity(_size)
-		{
-			cout << "string(char* str)-构造" << endl;
-			_str = new char[_capacity + 1];
-			strcpy(_str, str);
-		}
-
-		// 拷贝构造
-		string(const string& s)
-			:_str(nullptr)
-		{
-			cout << "string(const string& s) -- 拷贝构造" << endl;
-			reserve(s._capacity);
-			for (auto ch : s)
-			{
-				push_back(ch);
-			}
-		}
-
-		void swap(string& ss)
-		{
-			::swap(_str, ss._str);
-			::swap(_size, ss._size);
-			::swap(_capacity, ss._capacity);
-		}
-
-		// 移动构造
-		string(string&& s)
-		{
-			cout << "string(string&& s) -- 移动构造" << endl;
-			// 转移掠夺你的资源
-			swap(s);
-		}
-
-		string& operator=(const string& s)
-		{
-			cout << "string& operator=(const string& s) -- 拷贝赋值" <<
-				endl;
-			if (this != &s)
-			{
-				_str[0] = '\0';
-				_size = 0;
-				reserve(s._capacity);
-				for (auto ch : s)
-				{
-					push_back(ch);
-				}
-			}
-			return *this;
-		}
-
-		// 移动赋值
-		string& operator=(string&& s)
-		{
-			cout << "string& operator=(string&& s) -- 移动赋值" << endl;
-			swap(s);
-			return *this;
-		}
-
-		~string()
-		{
-			//cout << "~string() -- 析构" << endl;
-			delete[] _str;
-			_str = nullptr;
-		}
-
-		char& operator[](size_t pos)
-		{
-			assert(pos < _size);
-			return _str[pos];
-		}
-
-		void reserve(size_t n)
-		{
-			if (n > _capacity)
-			{
-				char* tmp = new char[n + 1];
-				if (_str)
-				{
-					strcpy(tmp, _str);
-					delete[] _str;
-				}
-				_str = tmp;
-				_capacity = n;
-			}
-		}
-
-		void push_back(char ch)
-		{
-			if (_size >= _capacity)
-			{
-				size_t newcapacity = _capacity == 0 ? 4 : _capacity *
-					2;
-				reserve(newcapacity);
-			}
-			_str[_size] = ch;
-			++_size;
-			_str[_size] = '\0';
-		}
-
-		string& operator+=(char ch)
-		{
-			push_back(ch);
-			return *this;
-		}
-
-		const char* c_str() const
-		{
-			return _str;
-		}
-
-		size_t size() const
-		{
-			return _size;
-		}
-	private:
-		char* _str = nullptr;
-		size_t _size = 0;
-		size_t _capacity = 0;
-	};
-}
-
-class Solution {
-public:
-	// 传值返回需要拷贝
-	bit::string addStrings(bit::string num1, bit::string num2) {
-		bit::string str;
-		int end1 = num1.size() - 1, end2 = num2.size() - 1;
-		// 进位
-		int next = 0;
-		while (end1 >= 0 || end2 >= 0)
-		{
-			int val1 = end1 >= 0 ? num1[end1--] - '0' : 0;
-			int val2 = end2 >= 0 ? num2[end2--] - '0' : 0;
-			int ret = val1 + val2 + next;
-			next = ret / 10;
-			ret = ret % 10;
-			str += ('0' + ret);
-		}
-		if (next == 1)
-			str += '1';
-		reverse(str.begin(), str.end());
-		//cout << &str << endl;
-
-		return str;
-	}
-};
+//
+//namespace bit
+//{
+//	class string
+//	{
+//	public:
+//		typedef char* iterator;
+//		typedef const char* const_iterator;
+//
+//		iterator begin()
+//		{
+//			return _str;
+//		}
+//
+//		iterator end()
+//		{
+//			return _str + _size;
+//		}
+//
+//		const_iterator begin() const
+//		{
+//			return _str;
+//		}
+//
+//		const_iterator end() const
+//		{
+//			return _str + _size;
+//		}
+//
+//		string(const char* str = "")
+//			:_size(strlen(str))
+//			, _capacity(_size)
+//		{
+//			cout << "string(char* str)-构造" << endl;
+//			_str = new char[_capacity + 1];
+//			strcpy(_str, str);
+//		}
+//
+//		// 拷贝构造
+//		string(const string& s)
+//			:_str(nullptr)
+//		{
+//			cout << "string(const string& s) -- 拷贝构造" << endl;
+//			reserve(s._capacity);
+//			for (auto ch : s)
+//			{
+//				push_back(ch);
+//			}
+//		}
+//
+//		void swap(string& ss)
+//		{
+//			::swap(_str, ss._str);
+//			::swap(_size, ss._size);
+//			::swap(_capacity, ss._capacity);
+//		}
+//
+//		// 移动构造
+//		string(string&& s)
+//		{
+//			cout << "string(string&& s) -- 移动构造" << endl;
+//			// 转移掠夺你的资源
+//			swap(s);
+//		}
+//
+//		string& operator=(const string& s)
+//		{
+//			cout << "string& operator=(const string& s) -- 拷贝赋值" <<
+//				endl;
+//			if (this != &s)
+//			{
+//				_str[0] = '\0';
+//				_size = 0;
+//				reserve(s._capacity);
+//				for (auto ch : s)
+//				{
+//					push_back(ch);
+//				}
+//			}
+//			return *this;
+//		}
+//
+//		// 移动赋值
+//		string& operator=(string&& s)
+//		{
+//			cout << "string& operator=(string&& s) -- 移动赋值" << endl;
+//			swap(s);
+//			return *this;
+//		}
+//
+//		~string()
+//		{
+//			//cout << "~string() -- 析构" << endl;
+//			delete[] _str;
+//			_str = nullptr;
+//		}
+//
+//		char& operator[](size_t pos)
+//		{
+//			assert(pos < _size);
+//			return _str[pos];
+//		}
+//
+//		void reserve(size_t n)
+//		{
+//			if (n > _capacity)
+//			{
+//				char* tmp = new char[n + 1];
+//				if (_str)
+//				{
+//					strcpy(tmp, _str);
+//					delete[] _str;
+//				}
+//				_str = tmp;
+//				_capacity = n;
+//			}
+//		}
+//
+//		void push_back(char ch)
+//		{
+//			if (_size >= _capacity)
+//			{
+//				size_t newcapacity = _capacity == 0 ? 4 : _capacity *
+//					2;
+//				reserve(newcapacity);
+//			}
+//			_str[_size] = ch;
+//			++_size;
+//			_str[_size] = '\0';
+//		}
+//
+//		string& operator+=(char ch)
+//		{
+//			push_back(ch);
+//			return *this;
+//		}
+//
+//		const char* c_str() const
+//		{
+//			return _str;
+//		}
+//
+//		size_t size() const
+//		{
+//			return _size;
+//		}
+//	private:
+//		char* _str = nullptr;
+//		size_t _size = 0;
+//		size_t _capacity = 0;
+//	};
+//}
+//
+//class Solution {
+//public:
+//	// 传值返回需要拷贝
+//	bit::string addStrings(bit::string num1, bit::string num2) {
+//		bit::string str;
+//		int end1 = num1.size() - 1, end2 = num2.size() - 1;
+//		// 进位
+//		int next = 0;
+//		while (end1 >= 0 || end2 >= 0)
+//		{
+//			int val1 = end1 >= 0 ? num1[end1--] - '0' : 0;
+//			int val2 = end2 >= 0 ? num2[end2--] - '0' : 0;
+//			int ret = val1 + val2 + next;
+//			next = ret / 10;
+//			ret = ret % 10;
+//			str += ('0' + ret);
+//		}
+//		if (next == 1)
+//			str += '1';
+//		reverse(str.begin(), str.end());
+//		//cout << &str << endl;
+//
+//		return str;
+//	}
+//};
 
 //int main()
 //{
@@ -637,3 +637,96 @@ public:
 //
 //	return 0;
 //}
+#include <functional>
+
+using placeholders::_1;
+using placeholders::_2;
+using placeholders::_3;
+
+int Sub(int a, int b)
+{
+    return (a - b) * 10;
+}
+
+int SubX(int a, int b, int c)
+{
+    return (a - b - c) * 10;
+}
+
+class Plus
+{
+public:
+    static int plusi(int a, int b)
+    {
+        return a + b;
+    }
+
+    double plusd(double a, double b)
+    {
+        return a + b;
+    }
+};
+
+int main()
+{
+    auto sub1 = bind(Sub, _1, _2);
+    cout << sub1(10, 5) << endl;
+
+    // bind 本质返回的一个仿函数对象
+    // 调整参数顺序（不常用）
+    // _1代表第一个实参
+    // _2代表第二个实参
+    // ...
+    auto sub2 = bind(Sub, _2, _1);
+    cout << sub2(10, 5) << endl;
+
+    // 调整参数个数 （常用）
+    auto sub3 = bind(Sub, 100, _1);
+    cout << sub3(5) << endl;
+
+    auto sub4 = bind(Sub, _1, 100);
+    cout << sub4(5) << endl;
+
+    // 分别绑死第123个参数
+    auto sub5 = bind(SubX, 100, _1, _2);
+    cout << sub5(5, 1) << endl;
+
+    auto sub6 = bind(SubX, _1, 100, _2);
+    cout << sub6(5, 1) << endl;
+
+    auto sub7 = bind(SubX, _1, _2, 100);
+    cout << sub7(5, 1) << endl;
+
+    // 成员函数对象进行绑死，就不需要每次都传递了
+    function<double(Plus&&, double, double)> f6 = &Plus::plusd;
+    Plus pd;
+    cout << f6(move(pd), 1.1, 1.1) << endl;
+    cout << f6(Plus(), 1.1, 1.1) << endl;
+
+    // bind一般用于，绑死一些固定参数
+    function<double(double, double)> f7 = bind(&Plus::plusd, Plus(), _1, _2);
+    cout << f7(1.1, 1.1) << endl;
+
+    // 计算复利的lambda
+    auto func1 = [](double rate, double money, int year) -> double {
+        double ret = money;
+        for (int i = 0; i < year; i++)
+        {
+            ret += ret * rate;
+        }
+        return ret - money;
+        };
+
+    // 绑死一些参数，实现出支持不同年化利率，不同金额和不同年份计算出复利的结算利息
+    function<double(double)> func3_1_5 = bind(func1, 0.015, _1, 3);
+    function<double(double)> func5_1_5 = bind(func1, 0.015, _1, 5);
+    function<double(double)> func10_2_5 = bind(func1, 0.025, _1, 10);
+    function<double(double)> func20_3_5 = bind(func1, 0.035, _1, 30);
+
+    cout << func3_1_5(1000000) << endl;
+    cout << func5_1_5(1000000) << endl;
+    cout << func10_2_5(1000000) << endl;
+    cout << func20_3_5(1000000) << endl;
+
+    return 0;
+}
