@@ -138,7 +138,32 @@ namespace caige
         size_t* _pcount;  // 引用计数
     };
 }
-
+//template<class T>
+//class shared_ptr
+//{
+//public :
+//    shared_ptr(T* ptr)
+//        ;_ptr(ptr)
+//        ,_pcount(new int(1))
+//    { }
+//    shared_ptr(const shared_ptr& p)
+//        :_ptr(p._ptr)
+//        , _pcount(p._pcount)
+//    {
+//        ++(*_pcount);
+//    }
+//    ~shared_ptr()
+//    {
+//        if (--(*_pcount) == 0)
+//        {
+//            delete _ptr;
+//            delete _pcount;
+//        }
+//    }
+//private:
+//    T* _ptr;
+//    int* _pcount;
+//}
 int main()
 {
 
